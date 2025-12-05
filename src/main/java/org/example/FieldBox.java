@@ -22,6 +22,7 @@ import java.util.Locale;
 
 public class FieldBox extends HBox {
 
+    // Στην αρχή θέτουμε τα μέλη της κλάσης
     private InterestCalculator interestCalculator = new InterestCalculator();
     private CustomColors colors = new CustomColors();
     private TextField posoInput = new TextField();
@@ -29,6 +30,7 @@ public class FieldBox extends HBox {
 
     public FieldBox(VBox parent) {
 
+        // UI
         this.getStyleClass().clear();
         this.getStyleClass().add("fieldbox");
         this.setEffect(new DropShadow(5, colors.getSecondaryColor()));
@@ -79,8 +81,7 @@ public class FieldBox extends HBox {
 
         addButton.setOnAction(e -> {
 
-            FieldBox newBox = new FieldBox(parent);
-            parent.getChildren().add(newBox);
+            parent.getChildren().add(new FieldBox(parent));
         });
 
 
@@ -584,32 +585,70 @@ public class FieldBox extends HBox {
             result += interestCalculator.calculateEpidikiaSynDyoPeriod(poso, 7.25, imerominiaYperimeriasInput.getValue(), currentEndDate);
         }
 
-        if (imerominiaEpidosis.isBefore(LocalDate.of(2020, Month.DECEMBER, 31)) && endDate.isAfter(LocalDate.of(2019, Month.DECEMBER, 31))) {
+        if (imerominiaEpidosis.isBefore(LocalDate.of(2020, Month.NOVEMBER, 6)) &&
+                endDate.isAfter(LocalDate.of(2019, Month.DECEMBER, 31))) {
 
             LocalDate startDate = imerominiaEpidosis;
-            LocalDate currentEndDate = LocalDate.of(2020, Month.DECEMBER, 31);
+            LocalDate currentEndDate = LocalDate.of(2020, Month.NOVEMBER, 6);
 
             if (startDate.isBefore(LocalDate.of(2020, Month.JANUARY, 1))) {
 
                 startDate = LocalDate.of(2020, Month.JANUARY, 1);
             }
 
+            if (endDate.isBefore(LocalDate.of(2020, Month.NOVEMBER, 6))) {
+
+                currentEndDate = endDate;
+            }
+            result += interestCalculator.calculateEpidikiaSynDyoPeriodLeapYear(poso, 7.25, startDate, currentEndDate);
+        }
+
+        // ΔΙΑΣΤΗΜΑ ΑΝΑΣΤΟΛΗΣ ΛΟΓΩ ΚΟΡΩΝΟΪΟΥ
+        if (imerominiaEpidosis.isBefore(LocalDate.of(2020, Month.DECEMBER, 31)) &&
+                endDate.isAfter(LocalDate.of(2020, Month.NOVEMBER, 6))) {
+
+            LocalDate startDate = imerominiaEpidosis;
+            LocalDate currentEndDate = LocalDate.of(2020, Month.DECEMBER, 31);
+
+            if (startDate.isBefore(LocalDate.of(2020, Month.NOVEMBER, 6))) {
+
+                startDate = LocalDate.of(2020, Month.NOVEMBER, 6);
+            }
+
             if (endDate.isBefore(LocalDate.of(2020, Month.DECEMBER, 31))) {
 
                 currentEndDate = endDate;
             }
-            //System.out.println(interestCalculator.calculateInterestPeriod(poso, 7.75, startDate, LocalDate.of(2022, Month.SEPTEMBER, 13)));
-            result += interestCalculator.calculateEpidikiaSynDyoPeriodLeapYear(poso, 7.25, startDate, currentEndDate);
+            // ΒΑΖΟΥΜΕ ΔΥΟ ΜΟΝΑΔΕΣ ΛΙΓΟΤΕΡΟ ΩΣ ΟΡΙΣΜΑ ΤΗΣ ΣΥΝΑΡΤΗΣΗΣ ΩΣΤΕ ΤΟ +2 ΝΑ ΓΙΝΕ 0!
+            result += interestCalculator.calculateEpidikiaSynDyoPeriodLeapYear(poso, 7.25 - 2.00, startDate, currentEndDate);
         }
 
-        if (imerominiaEpidosis.isBefore(LocalDate.of(2022, Month.JULY, 26)) && endDate.isAfter(LocalDate.of(2020, Month.DECEMBER, 31))) {
+        if (imerominiaEpidosis.isBefore(LocalDate.of(2021, Month.APRIL, 5)) && endDate.isAfter(LocalDate.of(2020, Month.DECEMBER, 31))) {
 
             LocalDate startDate = imerominiaEpidosis;
-            LocalDate currentEndDate = LocalDate.of(2022, Month.JULY, 26);
+            LocalDate currentEndDate = LocalDate.of(2021, Month.APRIL, 5);
 
             if (startDate.isBefore(LocalDate.of(2021, Month.JANUARY, 1))) {
 
                 startDate = LocalDate.of(2021, Month.JANUARY, 1);
+            }
+
+            if (endDate.isBefore(LocalDate.of(2021, Month.APRIL, 5))) {
+
+                currentEndDate = endDate;
+            }
+            // ΠΑΛΙ ΒΑΖΟΥΜΕ 2 ΛΙΓΟΤΕΡΟ ΓΙΑ ΤΟ ΔΕΥΤΕΡΟ ΜΙΣΟ ΤΟΥ ΔΙΑΣΤΗΜΑΤΟΣ ΤΗΣ ΑΝΑΣΤΟΛΗΣ
+            result += interestCalculator.calculateEpidikiaSynDyoPeriod(poso, 7.25 - 2.00, startDate, currentEndDate);
+        }
+
+        if (imerominiaEpidosis.isBefore(LocalDate.of(2022, Month.JULY, 26)) && endDate.isAfter(LocalDate.of(2021, Month.APRIL, 5))) {
+
+            LocalDate startDate = imerominiaEpidosis;
+            LocalDate currentEndDate = LocalDate.of(2022, Month.JULY, 26);
+
+            if (startDate.isBefore(LocalDate.of(2021, Month.APRIL, 5))) {
+
+                startDate = LocalDate.of(2021, Month.APRIL, 5);
             }
 
             if (endDate.isBefore(LocalDate.of(2022, Month.JULY, 26))) {
@@ -962,7 +1001,7 @@ public class FieldBox extends HBox {
         double result = 0;
         double poso = funcs.parseGreekDouble(posoInput.getText());
 
-        // ΤΟΚΟΙ ΕΠΙΔΙΚΙΑΣ ΣΥΝ 2
+        // ΤΟΚΟΙ ΕΠΙΔΙΚΙΑΣ ΣΥΝ 3
         if (imerominiaDimosieusis.isBefore(LocalDate.of(2019, Month.DECEMBER, 31))) {
 
             LocalDate currentEndDate = LocalDate.of(2019, Month.DECEMBER, 31);
@@ -974,32 +1013,67 @@ public class FieldBox extends HBox {
             result += interestCalculator.calculateEpidikiaSynTriaPeriod(poso, 7.25, imerominiaDimosieusis, currentEndDate);
         }
 
-        if (imerominiaDimosieusis.isBefore(LocalDate.of(2020, Month.DECEMBER, 31)) && endDate.isAfter(LocalDate.of(2019, Month.DECEMBER, 31))) {
+        if (imerominiaDimosieusis.isBefore(LocalDate.of(2020, Month.NOVEMBER, 6)) && endDate.isAfter(LocalDate.of(2019, Month.DECEMBER, 31))) {
 
             LocalDate startDate = imerominiaDimosieusis;
-            LocalDate currentEndDate = LocalDate.of(2020, Month.DECEMBER, 31);
+            LocalDate currentEndDate = LocalDate.of(2020, Month.NOVEMBER, 6);
 
             if (startDate.isBefore(LocalDate.of(2020, Month.JANUARY, 1))) {
 
                 startDate = LocalDate.of(2020, Month.JANUARY, 1);
             }
 
+            if (endDate.isBefore(LocalDate.of(2020, Month.NOVEMBER, 6))) {
+
+                currentEndDate = endDate;
+            }
+            result += interestCalculator.calculateEpidikiaSynTriaPeriodLeapYear(poso, 7.25, startDate, currentEndDate);
+        }
+
+        // ΔΙΑΣΤΗΜΑ ΑΝΑΣΤΟΛΗΣ ΛΟΓΩ COVID
+        if (imerominiaDimosieusis.isBefore(LocalDate.of(2020, Month.DECEMBER, 31)) && endDate.isAfter(LocalDate.of(2020, Month.NOVEMBER, 6))) {
+
+            LocalDate startDate = imerominiaDimosieusis;
+            LocalDate currentEndDate = LocalDate.of(2020, Month.DECEMBER, 31);
+
+            if (startDate.isBefore(LocalDate.of(2020, Month.NOVEMBER, 6))) {
+
+                startDate = LocalDate.of(2020, Month.NOVEMBER, 6);
+            }
+
             if (endDate.isBefore(LocalDate.of(2020, Month.DECEMBER, 31))) {
 
                 currentEndDate = endDate;
             }
-            //System.out.println(interestCalculator.calculateInterestPeriod(poso, 7.75, startDate, LocalDate.of(2022, Month.SEPTEMBER, 13)));
-            result += interestCalculator.calculateEpidikiaSynTriaPeriodLeapYear(poso, 7.25, startDate, currentEndDate);
+            // ΑΦΑΙΡΟΥΜΕ ΤΡΕΙΣ ΜΟΝΑΔΕΣ ΩΣΤΕ ΤΟ +3 ΝΑ ΓΙΝΕΙ 0
+            result += interestCalculator.calculateEpidikiaSynTriaPeriodLeapYear(poso, 7.25 - 3.00, startDate, currentEndDate);
         }
 
-        if (imerominiaDimosieusis.isBefore(LocalDate.of(2022, Month.JULY, 26)) && endDate.isAfter(LocalDate.of(2020, Month.DECEMBER, 31))) {
+        if (imerominiaDimosieusis.isBefore(LocalDate.of(2021, Month.APRIL, 5)) && endDate.isAfter(LocalDate.of(2020, Month.DECEMBER, 31))) {
 
             LocalDate startDate = imerominiaDimosieusis;
-            LocalDate currentEndDate = LocalDate.of(2022, Month.JULY, 26);
+            LocalDate currentEndDate = LocalDate.of(2021, Month.APRIL, 5);
 
             if (startDate.isBefore(LocalDate.of(2021, Month.JANUARY, 1))) {
 
                 startDate = LocalDate.of(2021, Month.JANUARY, 1);
+            }
+
+            if (endDate.isBefore(LocalDate.of(2021, Month.APRIL, 5))) {
+
+                currentEndDate = endDate;
+            }
+            result += interestCalculator.calculateEpidikiaSynTriaPeriodLeapYear(poso, 7.25 - 3.00, startDate, currentEndDate);
+        }
+
+        if (imerominiaDimosieusis.isBefore(LocalDate.of(2022, Month.JULY, 26)) && endDate.isAfter(LocalDate.of(2021, Month.APRIL, 5))) {
+
+            LocalDate startDate = imerominiaDimosieusis;
+            LocalDate currentEndDate = LocalDate.of(2022, Month.JULY, 26);
+
+            if (startDate.isBefore(LocalDate.of(2021, Month.APRIL, 5))) {
+
+                startDate = LocalDate.of(2021, Month.APRIL, 5);
             }
 
             if (endDate.isBefore(LocalDate.of(2022, Month.JULY, 26))) {
